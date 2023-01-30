@@ -1,0 +1,15 @@
+WITH deals as
+(SELECT employee_id,
+SUM(deal_size) as total_deal
+FROM deals
+GROUP BY employee_id)
+
+SELECT de.employee_id,
+CASE WHEN de.total_deal <= ec.quota
+THEN ec.base + (ec.commission * de.total_deal)
+ELSE ec.base + (ec.commission *ec. quota) + 
+((de.total_deal - ec.quota)*ec.commission *ec. accelerator)END
+AS total_compensation
+FROM deals de JOIN employee_contract ec
+on de.employee_id = ec.employee_id
+ORDER BY total_compensation DESC, ec.employee_id
