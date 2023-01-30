@@ -1,0 +1,11 @@
+WITH temp as (
+SELECT 
+e.email_id,
+SUM(CASE WHEN signup_action = 'Confirmed' THEN 1 ELSE 0 END) AS confirmed,
+COUNT(t.text_id) as total_count
+FROM emails e JOIN texts t
+ON e.email_id = t.email_id 
+GROUP BY 1)
+SELECT
+round((SUM(confirmed)/SUM(total_count)),2) as confirmed_rate
+from temp
