@@ -1,0 +1,17 @@
+WITH temp as(SELECT category, product,
+SUM(spend) as total_spend
+from product_spend
+where EXTRACT(year from transaction_date) = 2022
+group by 1,2
+ORDER BY category, total_spend DESC),
+
+product_ranks as(
+SELECT category, product, total_spend,
+DENSE_RANK()OVER(PARTITION BY category ORDER BY total_spend DESC) as ranks
+from temp
+)
+SELECT category, product, total_spend
+from product_ranks
+group by 1,2,3,ranks 
+having ranks < 3
+order by category, total_spend desc
