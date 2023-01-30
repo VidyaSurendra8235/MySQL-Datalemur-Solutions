@@ -1,0 +1,20 @@
+WITH c1 AS
+(
+SELECT *, AVG(salary) OVER(PARTITION BY title) AS avg_sal
+FROM employee_pay
+), 
+
+c2 AS 
+(
+SELECT employee_id, salary, 
+CASE
+WHEN salary < avg_sal/2 THEN 'Underpaid'
+WHEN salary > avg_sal*2 THEN 'Overpaid'
+END AS status 
+FROM c1
+)
+
+SELECT * 
+FROM c2 
+WHERE status IS NOT NULL
+ORDER BY employee_id
