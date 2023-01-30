@@ -1,0 +1,13 @@
+WITH c1 AS
+(
+SELECT
+  payer_id, recipient_id
+FROM payments
+INTERSECT
+SELECT
+  recipient_id, payer_id
+FROM payments
+)
+
+SELECT COUNT(*)/2
+FROM c1
