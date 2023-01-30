@@ -1,0 +1,15 @@
+WITH temp as(SELECT manufacturer, drug,
+SUM(units_sold) as total_cost
+from pharmacy_sales
+group by manufacturer, drug
+order by manufacturer, total_cost DESC),
+top_drugs as(
+SELECT manufacturer, drug, total_cost,
+DENSE_RANK() OVER(PARTITION BY manufacturer ORDER BY total_cost DESC) as ranks
+FROM temp
+)
+SELECT manufacturer, drug as popular_drugs 
+from top_drugs
+GROUP BY 1,2, total_cost, ranks
+HAVING ranks < 3
+ORDER by manufacturer,total_cost desc
