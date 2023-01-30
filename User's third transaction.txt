@@ -1,0 +1,6 @@
+WITH third_transaction as(SELECT user_id, spend, transaction_date,
+ROW_NUMBER() over(partition by USER_ID order by transaction_date) as row_num
+from transactions)
+SELECT user_id,spend,transaction_date
+from third_transaction
+where row_num =3;
