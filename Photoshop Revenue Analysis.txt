@@ -1,0 +1,7 @@
+SELECT customer_id, 
+SUM(revenue) as total_revenue
+FROM adobe_transactions
+WHERE customer_id IN(SELECT customer_id from adobe_transactions WHERE product='Photoshop')
+AND product <> 'Photoshop'
+GROUP BY customer_id
+ORDER BY customer_id
