@@ -1,20 +1,17 @@
-WITH c1 AS
+WITH temp as
 (
-SELECT *, AVG(salary) OVER(PARTITION BY title) AS avg_sal
+SELECT title, ROUND(avg(salary),0) as avg_salary
 FROM employee_pay
-), 
-
-c2 AS 
+GROUP BY title
+),
+temp2 as
 (
-SELECT employee_id, salary, 
-CASE
-WHEN salary < avg_sal/2 THEN 'Underpaid'
-WHEN salary > avg_sal*2 THEN 'Overpaid'
-END AS status 
-FROM c1
+SELECT ep.salary, te.title, ep.employee_id,
+CASE WHEN ep.salary <= te.avg_salary*0.5 THEN  'Underpaid'
+     WHEN ep.salary >= te.avg_salary*2 THEN 'Overpaid' END AS status
+FROM employee_pay ep JOIN temp te  
+ON ep.title = te.title
 )
-
-SELECT * 
-FROM c2 
-WHERE status IS NOT NULL
-ORDER BY employee_id
+SELECT employee_id, salary, status
+FROM temp2
+WHERE status is NOT NULL
